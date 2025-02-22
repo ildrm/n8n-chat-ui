@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Web Service</title>
+    <style>
+        body { font-family: Arial, sans-serif; direction: ltr; text-align: left; }
+        .chat-container { width: 400px; margin: 20px auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
+        .messages { max-height: 300px; overflow-y: auto; margin-bottom: 10px; }
+        .message { padding: 5px; border-radius: 5px; margin-bottom: 5px; }
+        .user { background-color: #d1e7fd; text-align: right; }
+        .bot { background-color: #d4edda; }
+        .loading { display: none; text-align: center; font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="messages" id="messages"></div>
+        <div class="loading" id="loading">Sending...</div>
+        <input type="text" id="chatInput" placeholder="Write your message..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            let input = document.getElementById("chatInput");
+            let messageText = input.value.trim();
+            if (!messageText) return;
+
+            let messagesDiv = document.getElementById("messages");
+            let loadingDiv = document.getElementById("loading");
+            messagesDiv.innerHTML += `<div class='message user'>${messageText}</div>`;
+            input.value = "";
+            loadingDiv.style.display = "block";
+
+            fetch("http://localhost:5678/webhook/2bb532df-5408-4700-849a-e54d6de1c522", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": "yQjlR8yUsHuuPIoDpId4t3dDqSiVkoqyUe4BQ6MGobyHkkcgY4Z3UCvOhA9M9rSrauwua3b2FjdU8Jp7vTYYjlQLTBJ2eZj4sksjT1Ej2QSWytKUkL6b7sPvdmf3TXk5vfWKEqSjBfCtw17h46Zk0Zk4BYAUrKKBpYTZv682QrjjLS1ovvmqODs1SJ9hT0EA3MJaSG79wHGrkWJmymyoPVLKPwRYQVHW7BiSKvT10fUBQ4YGAKfjLUE2bFby6AvGj6bpPsRCFgIHMP3WHdI9L47J8XulTsyQaMc723rb7BkKoxhv2fFkx6IVzzDyv0Eew90KbRt49xOfTXAGCYaQr1k7zLfg0pLiprto92AD3IfxsbBxwXep3I5kHjmLdIexfw1IiODaGSyFgKtRhW4b5aUkmZTdIghs2RHySGx1qvXqfgIu3bVgkRXPgeUhYATMWOul044D6SOtBjJZMQsOfZmPkqWjP2O6ef1tufX5zSt0kDza2O4MBZaMcur3Pk8P"
+                },
+                body: JSON.stringify([{ sessionId: "bf8a49534b464167ab469ef9b692e19a", action: "sendMessage", chatInput: messageText }])
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingDiv.style.display = "none";
+                let formattedText = marked.parse(data.text);
+                messagesDiv.innerHTML += `<div class='message bot'>${formattedText}</div>`;
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            })
+            .catch(error => {
+                loadingDiv.style.display = "none";
+                messagesDiv.innerHTML += `<div class='message bot'>Error receiving response</div>`;
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>
