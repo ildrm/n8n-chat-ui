@@ -22,8 +22,8 @@ This is an HTML-based chat interface designed to interact with an n8n webhook. I
    - Obtain the `chat_en.html` (English) and/or `chat_fa.html` (Persian) files.
    - Example:
     ```bash
-    git clone <repository-url>
-    cd <repository-directory>
+    git clone https://github.com/ildrm/n8n-chat-ui.git
+    cd n8n-chat-ui
     ```
 
 2. **Set Up n8n**:
