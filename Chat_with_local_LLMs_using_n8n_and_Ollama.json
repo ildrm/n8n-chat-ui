@@ -1,0 +1,106 @@
+{
+  "name": "Chat with local LLMs using n8n and Ollama",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "hf.co/SmartGitiCorp/best_Persian_LLM_AYA23_GGUF:latest",
+        "options": {}
+      },
+      "id": "61133dc6-dcd9-44ff-85f2-5d8cc2ce813e",
+      "name": "Ollama Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "position": [
+        1120,
+        840
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "ollamaApi": {
+          "id": "zMNslKGnBN7mgVuI",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body[0].chatInput }}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "AIMessagePromptTemplate",
+              "message": "شما یک دستیار آشپزی حرفه‌ای هستید که فقط به **زبان فارسی** صحبت می‌کند. شما باید به تمامی سوالات در حوزه **آشپزی، مواد غذایی، ترکیب مواد اولیه، رژیم‌های غذایی، و نکات مربوط به پخت و پز** پاسخ دهید. \n\n✅ وظایف شما:\n- ارائه **دستور پخت غذاها** از سراسر دنیا، مخصوصاً غذاهای ایرانی.\n- راهنمایی درباره **انتخاب مواد اولیه** و جایگزین‌های مناسب.\n- ارائه **نکات آشپزی** برای بهبود طعم و کیفیت غذا.\n- مشاوره درباره **ترکیب مواد غذایی** و تأثیر آنها بر سلامتی.\n\n❌ شما اجازه ندارید درباره موارد زیر صحبت کنید:\n- **موضوعات غیرمرتبط با آشپزی** (مثلاً سیاست، اقتصاد، تکنولوژی و غیره).\n- **مواد مخدر، الکل، سیگار و هرگونه ماده غیرقانونی**.\n- **جرائم، هک، امنیت سایبری، یا فعالیت‌های غیرقانونی**.\n- **موضوعات پزشکی خارج از حوزه تغذیه و رژیم غذایی** (مثل تشخیص بیماری‌ها یا توصیه دارویی).\n\nهرگاه سوالی خارج از حوزه آشپزی از شما پرسیده شد، مودبانه پاسخ دهید که **\"من فقط در حوزه آشپزی و مواد غذایی فعالیت دارم و نمی‌توانم در این مورد کمکی کنم.\"**\n\nبه عنوان یک دستیار، همیشه با لحنی محترمانه و دوستانه پاسخ بده و اطلاعات خود را به شکل خلاصه و مفید ارائه کن.\n"
+            }
+          ]
+        }
+      },
+      "id": "eeffdd4e-6795-4ebc-84f7-87b5ac4167d9",
+      "name": "Chat LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        1140,
+        620
+      ],
+      "typeVersion": 1.4
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2bb532df-5408-4700-849a-e54d6de1c522",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        840,
+        700
+      ],
+      "id": "d31226e1-9f71-4d95-abb7-3e1ca9052c8c",
+      "name": "Webhook",
+      "webhookId": "2bb532df-5408-4700-849a-e54d6de1c522",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "MrfhS9bAuWpPjw8s",
+          "name": "Header Auth account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Chat LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Chat LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "70711208-6438-4acf-bc24-f4bac8f5f4b9",
+  "meta": {
+    "templateId": "2384",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0d6fb83d885cddf1816a51cf1d8c18d13855fbd9bb13471e326fd49285e51eeb"
+  },
+  "id": "snvpXywr6a5Of630",
+  "tags": []
+}
